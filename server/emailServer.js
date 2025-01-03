@@ -10,8 +10,8 @@ app.use(express.json());
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "sergvinn2008@gmail.com", // Ваш Gmail
-    pass: "dwrv fypk lrst hglr",   // Пароль програми
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
   },
 });
 
@@ -40,7 +40,7 @@ app.post("/send-email", async (req, res) => {
 
   try {
     await transporter.sendMail({
-      from: "your-email@gmail.com",
+      from: process.env.GMAIL_USER,
       to,
       subject,
       text,

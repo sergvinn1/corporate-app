@@ -1,48 +1,31 @@
-const API_URL = "http://localhost:5000/requests"; // Змінити URL на ваш API, якщо потрібно
+import { db } from "../firebase";
+import { collection, getDocs, query, where, doc, updateDoc } from "firebase/firestore";
 
-// Функція для отримання заявок
+// Переконайтеся, що шлях до emailSender.js правильний
+import sendEmail from "../../server/emailSender";
+
 export const fetchRequests = async (filter) => {
-  try {
-    const response = await fetch(`${API_URL}?status=${filter}`);
-    if (!response.ok) {
-      throw new Error("Помилка при завантаженні заявок");
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Помилка у fetchRequests:", error);
-    return [];
-  }
+  const q = filter === "all"
+    ? query(collection(db, "requests"))
+    : query(collection(db, "requests"), where("status", "==", filter));
+
+  const querySnapshot = await getDocs(q);
+  const requests = [];
+  querySnapshot.forEach((doc) => {
+    requests.push({ id: doc.id, ...doc.data() });
+  });
+
+  return requests;
 };
 
-// Функція для підтвердження заявки
 export const approveRequest = async (id, email) => {
-  try {
-    const response = await fetch(`${API_URL}/${id}/approve`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
-    if (!response.ok) {
-      throw new Error("Помилка при підтвердженні запиту");
-    }
-    console.log(`Запит із ID ${id} підтверджено, повідомлення надіслано на ${email}`);
-  } catch (error) {
-    console.error("Помилка у approveRequest:", error);
-  }
+  const requestRef = doc(db, "requests", id);
+  await updateDoc(requestRef, { status: "approved" });
+  sendEmail(email, "Ваш запит підтверджено", "Ваш запит було підтверджено адміністратором.");
 };
 
-// Функція для відхилення заявки
 export const rejectRequest = async (id, email) => {
-  try {
-    const response = await fetch(`${API_URL}/${id}/reject`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
-    if (!response.ok) {
-      throw new Error("Помилка при відхиленні запиту");
-    }
-    console.log(`Запит із ID ${id} відхилено, повідомлення надіслано на ${email}`);
-  } catch (error) {
-    console.error("Помилка у rejectRequest:", error);
-  }
+  const requestRef = doc(db, "requests", id);
+  await updateDoc(requestRef, { status: "rejected" });
+  sendEmail(email, "Ваш запит відхилено", "На жаль, ваш запит було відхилено.");
 };

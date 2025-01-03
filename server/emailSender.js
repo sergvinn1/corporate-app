@@ -1,3 +1,5 @@
+// server/emailSender.js
+
 const sendEmail = async (to, subject, text) => {
     try {
       const response = await fetch("http://localhost:5000/send-email", {
@@ -19,4 +21,3 @@ const sendEmail = async (to, subject, text) => {
   };
   
   export default sendEmail;
-  

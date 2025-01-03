@@ -1,5 +1,9 @@
+// src/components/AdminPanel.jsx
+
 import React, { useState, useEffect } from "react";
 import { approveRequest, rejectRequest, fetchRequests } from "../actions/requestActions";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AdminPanel = () => {
   const [requests, setRequests] = useState([]);
@@ -15,24 +19,29 @@ const AdminPanel = () => {
       setRequests(data);
     } catch (error) {
       console.error("Помилка при завантаженні заявок:", error);
+      toast.error("Не вдалося завантажити заявки.");
     }
   };
 
   const handleApprove = async (id, email) => {
     try {
       await approveRequest(id, email);
+      toast.success("Запит підтверджено.");
       loadRequests();
     } catch (error) {
       console.error("Помилка при підтвердженні запиту:", error);
+      toast.error("Не вдалося підтвердити запит.");
     }
   };
 
   const handleReject = async (id, email) => {
     try {
       await rejectRequest(id, email);
+      toast.success("Запит відхилено.");
       loadRequests();
     } catch (error) {
       console.error("Помилка при відхиленні запиту:", error);
+      toast.error("Не вдалося відхилити запит.");
     }
   };
 

@@ -1,8 +1,7 @@
-// src/components/RequestHandler.jsx
 import React, { useState, useEffect } from "react";
-import { db } from "../firebase";
+import { db } from "../firebase";  // Переконайтеся, що у вас є правильна конфігурація Firebase
 import { collection, onSnapshot, doc, updateDoc } from "firebase/firestore";
-import sendEmail from "../email/emailSender";
+import sendEmail from "../email/emailSender";  // Переконайтеся, що функція sendEmail правильно налаштована
 
 const RequestHandler = () => {
   const [requests, setRequests] = useState([]);
